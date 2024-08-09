@@ -17,8 +17,6 @@ export const emailRegister = actionClient
         where: eq(users.email, email),
       });
 
-      console.log(existingUser);
-
       if (existingUser) {
         if (!existingUser.emailVerified) {
           const verificationToken = await generateEmailVerificationToken(email);

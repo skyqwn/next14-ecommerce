@@ -41,6 +41,13 @@ const RegisterForm = () => {
           description: data.success,
         });
       }
+      if (data?.error) {
+        toast({
+          variant: "destructive",
+          title: "회원가입 실패",
+          description: data.error,
+        });
+      }
     },
   });
 

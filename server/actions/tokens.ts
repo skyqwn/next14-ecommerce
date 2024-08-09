@@ -2,7 +2,7 @@
 
 import { eq } from "drizzle-orm";
 import { db } from "..";
-import { emailTokens } from "../schema";
+import { emailTokens, users } from "../schema";
 
 export const getVerificationTokenByEmail = async (email: string) => {
   try {
@@ -34,4 +34,24 @@ export const generateEmailVerificationToken = async (email: string) => {
     })
     .returning();
   return verificationToken;
+};
+
+export const newVerification = async (token: string) => {
+  const existingToken = await getVerificationTokenByEmail(token);
+  if (!existingToken) return { error: "토큰이 존재하지 않습니다." };
+  const hasExpired = new Date(existingToken.expires) < new Date();
+
+  if (hasExpired) return { error: "토큰의 유효기간이 끝났습니다." };
+
+  const existingUser = await db.query.users.findFirst({
+    where: eq(users.email, existingToken.email),
+  });
+  if (!existingUser) return { error: "이메일이 존재하지 않습니다." };
+  await db.update(users).set({
+    emailVerified: new Date(),
+    email: existingToken.email,
+  });
+
+  await db.delete(emailTokens).where(eq(emailTokens.id, existingToken.id));
+  return { success: "이메일 인증이 되었습니다." };
 };

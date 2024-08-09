@@ -20,8 +20,10 @@ import { LoginSchema, zLoginSchema } from "@/types/login-schema";
 import { emailSignIn } from "@/server/actions/email-signin";
 import { cn } from "@/lib/utils";
 import { toast } from "../ui/use-toast";
+import { useRouter } from "next/navigation";
 
 const LoginForm = () => {
+  const router = useRouter();
   const form = useForm<zLoginSchema>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -37,8 +39,16 @@ const LoginForm = () => {
       if (data?.success) {
         toast({
           variant: "default",
-          title: "로그인성공🎉",
+          title: "로그인 성공🎉",
           description: "환영합니다!",
+        });
+        router.push("/");
+      }
+      if (data?.error) {
+        toast({
+          variant: "destructive",
+          title: "로그인 실패",
+          description: data.error,
         });
       }
     },
