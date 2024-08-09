@@ -15,6 +15,41 @@
       "when": 1723101816328,
       "tag": "0001_fuzzy_dragon_man",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1723125550260,
+      "tag": "0002_glorious_stick",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1723183645527,
+      "tag": "0003_perfect_quicksilver",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1723183722213,
+      "tag": "0004_supreme_wolf_cub",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1723186905727,
+      "tag": "0005_useful_valkyrie",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1723188208237,
+      "tag": "0006_lying_colonel_america",
+      "breakpoints": true
     }
   ]
 }
