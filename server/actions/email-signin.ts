@@ -10,7 +10,7 @@ import { sendVerificationEmail } from "./email";
 import { signIn } from "../auth";
 import { AuthError } from "next-auth";
 
-export const emailSignIn = actionClient
+export const emailSignInAction = actionClient
   .schema(LoginSchema)
   .action(async ({ parsedInput: { email, password, code } }) => {
     try {

@@ -18,7 +18,8 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { toast } from "../ui/use-toast";
 import { RegisterSchema, zRegisterSchema } from "@/types/register-schema";
-import { emailRegister } from "@/server/actions/email-register";
+import { emailRegisterAction } from "@/server/actions/email-register";
+import Link from "next/link";
 
 const RegisterForm = () => {
   const form = useForm<zRegisterSchema>({
@@ -32,7 +33,7 @@ const RegisterForm = () => {
   });
   useAction;
 
-  const { execute, isExecuting } = useAction(emailRegister, {
+  const { execute, isExecuting } = useAction(emailRegisterAction, {
     onSuccess: ({ data }) => {
       if (data?.success) {
         toast({
@@ -71,7 +72,12 @@ const RegisterForm = () => {
                 <FormItem>
                   <FormLabel>이름</FormLabel>
                   <FormControl>
-                    <Input placeholder="Kim Lee" {...field} type="text" />
+                    <Input
+                      placeholder="Kim Lee"
+                      {...field}
+                      type="text"
+                      disabled={isExecuting}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -88,6 +94,7 @@ const RegisterForm = () => {
                       placeholder="example@gamil.com"
                       {...field}
                       type="email"
+                      disabled={isExecuting}
                     />
                   </FormControl>
                   <FormMessage />
@@ -101,12 +108,20 @@ const RegisterForm = () => {
                 <FormItem>
                   <FormLabel>비밀번호</FormLabel>
                   <FormControl>
-                    <Input placeholder="********" {...field} type="password" />
+                    <Input
+                      placeholder="********"
+                      {...field}
+                      type="password"
+                      disabled={isExecuting}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            <Button size={"sm"} className="px-0" variant={"link"}>
+              <Link href={"/auth/reset"}>비밀번호를 잊어버리셨나요?</Link>
+            </Button>
             <Button
               className={cn("w-full mt-5", isExecuting && "animate-pulse")}
               type="submit"

@@ -9,7 +9,7 @@ import { users } from "../schema";
 import { generateEmailVerificationToken } from "./tokens";
 import { sendVerificationEmail } from "./email";
 
-export const emailRegister = actionClient
+export const emailRegisterAction = actionClient
   .schema(RegisterSchema)
   .action(async ({ parsedInput: { email, name, password } }) => {
     try {

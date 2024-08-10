@@ -16,34 +16,33 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { LoginSchema, zLoginSchema } from "@/types/login-schema";
 import { emailSignInAction } from "@/server/actions/email-signin";
 import { cn } from "@/lib/utils";
 import { toast } from "../ui/use-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { ResetSchema, zResetSchema } from "@/types/reset-schema";
+import { resetPasswordAction } from "@/server/actions/password-reset";
 
-const LoginForm = () => {
+const ResetForm = () => {
   const router = useRouter();
-  const form = useForm<zLoginSchema>({
-    resolver: zodResolver(LoginSchema),
+  const form = useForm<zResetSchema>({
+    resolver: zodResolver(ResetSchema),
     defaultValues: {
       email: "",
-      password: "",
     },
     mode: "onChange",
   });
   useAction;
 
-  const { execute, isExecuting } = useAction(emailSignInAction, {
+  const { execute, isExecuting } = useAction(resetPasswordAction, {
     onSuccess: ({ data }) => {
       if (data?.success) {
         toast({
           variant: "default",
-          title: "로그인 성공🎉",
-          description: "환영합니다!",
+          title: data.success,
+          description: "이메일 확인하여 다음 단계를 확인해주세요.",
         });
-        router.push("/");
       }
       if (data?.error) {
         toast({
@@ -55,15 +54,15 @@ const LoginForm = () => {
     },
   });
 
-  const onSubmit = (values: zLoginSchema) => {
+  const onSubmit = (values: zResetSchema) => {
     execute(values);
   };
 
   return (
     <AuthCard
-      cardTitle="로그인을 해주세요!"
-      backButtonHref="/auth/register"
-      backButtonlabel="아이디가 없으신가요?"
+      cardTitle="비밀번호를 잃어버리셨나요?"
+      backButtonHref="/auth/login"
+      backButtonlabel="이미 아이디가 있으신가요?"
       showSocial
     >
       <div>
@@ -80,25 +79,14 @@ const LoginForm = () => {
                       placeholder="example@gamil.com"
                       {...field}
                       type="email"
+                      disabled={isExecuting}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>비밀번호</FormLabel>
-                  <FormControl>
-                    <Input placeholder="********" {...field} type="password" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+
             <Button size={"sm"} className="px-0" variant={"link"}>
               <Link href={"/auth/reset"}>비밀번호를 잊어버리셨나요?</Link>
             </Button>
@@ -106,7 +94,7 @@ const LoginForm = () => {
               className={cn("w-full mt-5", isExecuting && "animate-pulse")}
               type="submit"
             >
-              {isExecuting ? "로그인중..." : "로그인"}
+              {isExecuting ? "이메일 확인중..." : "확인"}
             </Button>
           </form>
         </Form>
@@ -115,4 +103,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default ResetForm;

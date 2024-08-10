@@ -16,34 +16,38 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { LoginSchema, zLoginSchema } from "@/types/login-schema";
 import { emailSignInAction } from "@/server/actions/email-signin";
 import { cn } from "@/lib/utils";
 import { toast } from "../ui/use-toast";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import {
+  NewPasswordSchema,
+  zNewPasswordSchema,
+} from "@/types/new-password-schema";
+import { newPasswordAction } from "@/server/actions/new-password";
+import { useSearchParams } from "next/navigation";
 
-const LoginForm = () => {
-  const router = useRouter();
-  const form = useForm<zLoginSchema>({
-    resolver: zodResolver(LoginSchema),
+const NewPasswordForm = () => {
+  const token = useSearchParams().get("token");
+
+  const form = useForm<zNewPasswordSchema>({
+    resolver: zodResolver(NewPasswordSchema),
     defaultValues: {
-      email: "",
       password: "",
+      token: "",
     },
     mode: "onChange",
   });
   useAction;
 
-  const { execute, isExecuting } = useAction(emailSignInAction, {
+  const { execute, isExecuting } = useAction(newPasswordAction, {
     onSuccess: ({ data }) => {
       if (data?.success) {
         toast({
           variant: "default",
-          title: "로그인 성공🎉",
-          description: "환영합니다!",
+          title: data.success,
+          description: "다시 로그인해주세요.",
         });
-        router.push("/");
       }
       if (data?.error) {
         toast({
@@ -55,15 +59,15 @@ const LoginForm = () => {
     },
   });
 
-  const onSubmit = (values: zLoginSchema) => {
-    execute(values);
+  const onSubmit = (values: zNewPasswordSchema) => {
+    execute({ password: values.password, token });
   };
 
   return (
     <AuthCard
-      cardTitle="로그인을 해주세요!"
-      backButtonHref="/auth/register"
-      backButtonlabel="아이디가 없으신가요?"
+      cardTitle="비밀번호를 변경하세요!"
+      backButtonHref="/auth/login"
+      backButtonlabel="이미 아이디가 있으신가요?"
       showSocial
     >
       <div>
@@ -71,29 +75,17 @@ const LoginForm = () => {
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
               control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>이메일</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="example@gamil.com"
-                      {...field}
-                      type="email"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
               name="password"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>비밀번호</FormLabel>
                   <FormControl>
-                    <Input placeholder="********" {...field} type="password" />
+                    <Input
+                      placeholder="********"
+                      {...field}
+                      type="password"
+                      disabled={isExecuting}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -106,7 +98,7 @@ const LoginForm = () => {
               className={cn("w-full mt-5", isExecuting && "animate-pulse")}
               type="submit"
             >
-              {isExecuting ? "로그인중..." : "로그인"}
+              {isExecuting ? "비밀번호 변경중..." : "비밀번호 변경"}
             </Button>
           </form>
         </Form>
@@ -115,4 +107,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default NewPasswordForm;
