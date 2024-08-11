@@ -7,9 +7,9 @@ import UserButton from "./user-button";
 const Nav = async () => {
   const session = await auth();
   return (
-    <header className="py-8">
+    <header className="py-12">
       <nav>
-        <ul className="flex justify-between">
+        <ul className="flex justify-between items-center">
           <li className="flex flex-1">
             <Link href={"/"}>NEXT_SHOPPING</Link>
           </li>
