@@ -16,14 +16,25 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
+
 import { LoginSchema, zLoginSchema } from "@/types/login-schema";
 import { emailSignInAction } from "@/server/actions/email-signin";
 import { cn } from "@/lib/utils";
 import { toast } from "../ui/use-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useState } from "react";
 
 const LoginForm = () => {
+  const [showTwoFactor, setShowTwoFactor] = useState(false);
+
   const router = useRouter();
   const form = useForm<zLoginSchema>({
     resolver: zodResolver(LoginSchema),
@@ -52,6 +63,7 @@ const LoginForm = () => {
           description: data.error,
         });
       }
+      if (data?.twoFactor) setShowTwoFactor(true);
     },
   });
 
@@ -69,44 +81,90 @@ const LoginForm = () => {
       <div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>이메일</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="example@gamil.com"
-                      {...field}
-                      type="email"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+            <div>
+              {showTwoFactor && (
+                <FormField
+                  control={form.control}
+                  name="code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>가입된 이메일로 코드를 확인해주세요</FormLabel>
+                      <FormControl>
+                        <InputOTP
+                          disabled={isExecuting}
+                          {...field}
+                          maxLength={6}
+                        >
+                          <InputOTPGroup>
+                            <InputOTPSlot index={0} />
+                            <InputOTPSlot index={1} />
+                            <InputOTPSlot index={2} />
+                          </InputOTPGroup>
+                          <InputOTPSeparator />
+                          <InputOTPGroup>
+                            <InputOTPSlot index={3} />
+                            <InputOTPSlot index={4} />
+                            <InputOTPSlot index={5} />
+                          </InputOTPGroup>
+                        </InputOTP>
+                      </FormControl>
+                      <FormDescription />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>비밀번호</FormLabel>
-                  <FormControl>
-                    <Input placeholder="********" {...field} type="password" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+              {!showTwoFactor && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="example@gmail.com"
+                            type="email"
+                            autoComplete="email"
+                          />
+                        </FormControl>
+                        <FormDescription />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="********"
+                            type="password"
+                            autoComplete="current-password"
+                          />
+                        </FormControl>
+                        <FormDescription />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </>
               )}
-            />
-            <Button size={"sm"} className="px-0" variant={"link"}>
-              <Link href={"/auth/reset"}>비밀번호를 잊어버리셨나요?</Link>
-            </Button>
+              <Button size={"sm"} className="px-0 mt-4" variant={"link"}>
+                <Link href={"/auth/reset"}>비밀번호를 잊어버리셨나요?</Link>
+              </Button>
+            </div>
             <Button
-              className={cn("w-full mt-5", isExecuting && "animate-pulse")}
+              className={cn("w-full mt-4", isExecuting && "animate-pulse")}
               type="submit"
             >
-              {isExecuting ? "로그인중..." : "로그인"}
+              {showTwoFactor ? "인증하기" : "로그인"}
             </Button>
           </form>
         </Form>

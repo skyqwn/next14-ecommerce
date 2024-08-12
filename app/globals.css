@@ -58,3 +58,7 @@
     --chart-5: 340 75% 55%;
   }
 }
+
+[data-ut-element="button"][data-state="uploading"]::after {
+  @apply bg-primary/50;
+}

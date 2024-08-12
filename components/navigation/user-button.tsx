@@ -17,10 +17,12 @@ import Image from "next/image";
 import { LogOut, Moon, Settings, Sun, TruckIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Switch } from "../ui/switch";
+import { useRouter } from "next/navigation";
 
 const UserButton = ({ user }: Session) => {
   const { setTheme, theme } = useTheme();
   const [checked, setChecked] = useState(false);
+  const router = useRouter();
 
   function setSwitchState() {
     switch (theme) {
@@ -65,8 +67,9 @@ const UserButton = ({ user }: Session) => {
               <Image
                 src={user.image}
                 alt={user.name!}
-                fill
-                className="rounded-full"
+                width={40}
+                height={40}
+                className="rounded-full size-10"
               />
             )}
             <p className="font-bold text-xs">{user?.name}</p>
@@ -75,11 +78,17 @@ const UserButton = ({ user }: Session) => {
             </span>
           </div>
           <DropdownMenuSeparator />
-          <DropdownMenuItem className="group py-2 font-medium cursor-pointer transition-all duration-500">
+          <DropdownMenuItem
+            onClick={() => router.push("/dashboard/orders")}
+            className="group py-2 font-medium cursor-pointer transition-all duration-500"
+          >
             <TruckIcon size={14} className="mr-3 group-hover:translate-x-1 " />
             My orders
           </DropdownMenuItem>
-          <DropdownMenuItem className="group py-2 font-medium cursor-pointer transition-all duration-500">
+          <DropdownMenuItem
+            onClick={() => router.push("/dashboard/settings")}
+            className="group py-2 font-medium cursor-pointer transition-all duration-500"
+          >
             <Settings size={14} className="mr-3 group-hover:rotate-180 " />
             Settings
           </DropdownMenuItem>

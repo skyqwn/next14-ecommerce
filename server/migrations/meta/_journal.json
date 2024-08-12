@@ -57,6 +57,13 @@
       "when": 1723253495442,
       "tag": "0007_adorable_wolf_cub",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1723386878315,
+      "tag": "0008_watery_thaddeus_ross",
+      "breakpoints": true
     }
   ]
 }
