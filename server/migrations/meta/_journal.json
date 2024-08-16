@@ -71,6 +71,13 @@
       "when": 1723452203859,
       "tag": "0009_sad_human_cannonball",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1723528818344,
+      "tag": "0010_striped_zodiak",
+      "breakpoints": true
     }
   ]
 }
