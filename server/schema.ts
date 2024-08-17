@@ -1,5 +1,6 @@
 import {
   boolean,
+  index,
   integer,
   pgEnum,
   pgTable,
@@ -11,18 +12,17 @@ import {
 } from "drizzle-orm/pg-core";
 import type { AdapterAccount } from "next-auth/adapters";
 import { createId } from "@paralleldrive/cuid2";
-import { Description } from "@radix-ui/react-toast";
-import { timeStamp } from "console";
 import { relations } from "drizzle-orm";
 
 export const RoleEnum = pgEnum("roles", ["user", "admin"]);
 
 export const users = pgTable("user", {
   id: text("id")
+    .notNull()
     .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
+    .$defaultFn(() => createId()),
   name: text("name"),
-  email: text("email").unique(),
+  email: text("email").notNull(),
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
   password: text("password"),
@@ -36,7 +36,7 @@ export const accounts = pgTable(
     userId: text("userId")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    type: text("type").$type<AdapterAccount>().notNull(),
+    type: text("type").$type<AdapterAccount["type"]>().notNull(),
     provider: text("provider").notNull(),
     providerAccountId: text("providerAccountId").notNull(),
     refresh_token: text("refresh_token"),
@@ -81,13 +81,12 @@ export const passwordResetTokens = pgTable(
     expires: timestamp("expires", { mode: "date" }).notNull(),
     email: text("email").notNull(),
   },
-  (verificationToken) => ({
+  (vt) => ({
     compositePk: primaryKey({
-      columns: [verificationToken.id, verificationToken.token],
+      columns: [vt.id, vt.token],
     }),
   })
 );
-
 export const twoFactorTokens = pgTable(
   "two_factor_tokens",
   {
@@ -99,9 +98,9 @@ export const twoFactorTokens = pgTable(
     email: text("email").notNull(),
     userId: text("userId").references(() => users.id, { onDelete: "cascade" }),
   },
-  (verificationToken) => ({
+  (vt) => ({
     compositePk: primaryKey({
-      columns: [verificationToken.id, verificationToken.token],
+      columns: [vt.id, vt.token],
     }),
   })
 );
@@ -145,6 +144,7 @@ export const variantTags = pgTable("variantTags", {
 
 export const productRelations = relations(products, ({ many }) => ({
   productVariants: many(productVariants, { relationName: "productVariants" }),
+  reviews: many(reviews, { relationName: "reviews" }),
 }));
 
 export const productVariantsRelations = relations(
@@ -174,4 +174,43 @@ export const variantTagsRelations = relations(variantTags, ({ one }) => ({
     references: [productVariants.id],
     relationName: "variantTags",
   }),
+}));
+
+export const reviews = pgTable(
+  "reviews",
+  {
+    id: serial("id").primaryKey(),
+    rating: real("rating").notNull(),
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    productId: serial("productId")
+      .notNull()
+      .references(() => products.id, { onDelete: "cascade" }),
+    comment: text("comment").notNull(),
+    created: timestamp("created").defaultNow(),
+  },
+  (table) => {
+    return {
+      productIdx: index("productIdx").on(table.productId),
+      userIdx: index("userIdx").on(table.userId),
+    };
+  }
+);
+
+export const reviewRelations = relations(reviews, ({ one }) => ({
+  user: one(users, {
+    fields: [reviews.userId],
+    references: [users.id],
+    relationName: "user_reviews",
+  }),
+  product: one(products, {
+    fields: [reviews.productId],
+    references: [products.id],
+    relationName: "reviews",
+  }),
+}));
+
+export const userRelations = relations(users, ({ many }) => ({
+  reviews: many(reviews, { relationName: "user_reviews" }),
 }));

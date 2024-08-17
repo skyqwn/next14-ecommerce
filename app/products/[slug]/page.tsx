@@ -7,6 +7,7 @@ import formatPrice from "@/lib/fotmat-price";
 import sanitizeHtml from "@/lib/santizeHtml";
 import ProductPick from "@/components/products/product-pick";
 import ProductShowcase from "@/components/products/product-showcase";
+import Reviews from "@/components/reviews/reviews";
 
 export async function generateStaticParams() {
   const data = await db.query.productVariants.findMany({
@@ -75,6 +76,7 @@ const ProductDetailPage = async ({ params }: { params: { slug: string } }) => {
             </div>
           </div>
         </section>
+        <Reviews productId={variant.productId} />
       </main>
     );
   }

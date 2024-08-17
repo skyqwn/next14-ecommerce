@@ -158,15 +158,7 @@ const ProductForm = () => {
                 </FormItem>
               )}
             />
-            <Button
-              disabled={
-                isExecuting ||
-                !form.formState.isValid ||
-                !form.formState.isDirty
-              }
-              className="w-full"
-              type="submit"
-            >
+            <Button disabled={isExecuting} className="w-full" type="submit">
               {editMode ? "수정하기" : "등록하기"}
             </Button>
           </form>

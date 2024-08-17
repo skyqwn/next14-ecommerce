@@ -1,0 +1,1 @@
+ALTER TABLE "reviews" ALTER COLUMN "productId" SET DATA TYPE integer;
